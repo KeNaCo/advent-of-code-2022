@@ -8,6 +8,7 @@ def read_elf(list_of_calories: Sequence[str]) -> tuple[int]:
         if item == '':  # end of elfs bag
             yield tuple(elf_bag)
             elf_bag = []
+            continue
         elf_bag.append(int(item))
 
 
@@ -25,4 +26,20 @@ class ReadOneElfAtATimeTestCase(unittest.TestCase):
     def test_one_elf_with_something_in_his_bag(self):
         list_of_calories = ["1000", "2000", ""]
         output = next(read_elf(list_of_calories))
+        self.assertEqual(output, (1000, 2000))
+
+    def test_one_elf_with_something_the_second_with_empty_bag(self):
+        list_of_calories = ["1000", "", ""]
+        elf_reader = read_elf(list_of_calories)
+        output = next(elf_reader)
+        self.assertEqual(output, (1000,))
+        output = next(elf_reader)
+        self.assertEqual(output, tuple())
+
+    def test_two_elfs_with_full_bags(self):
+        list_of_calories = ["1000", "", "1000", "2000", ""]
+        elf_reader = read_elf(list_of_calories)
+        output = next(elf_reader)
+        self.assertEqual(output, (1000,))
+        output = next(elf_reader)
         self.assertEqual(output, (1000, 2000))
