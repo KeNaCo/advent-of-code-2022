@@ -1,5 +1,5 @@
 import unittest
-from typing import Sequence, Iterable
+from typing import Sequence, Iterator
 
 
 def read_elf(list_of_calories: Sequence[str]) -> tuple[int]:
@@ -45,14 +45,22 @@ class ReadOneElfAtATimeTestCase(unittest.TestCase):
         self.assertEqual(output, (1000, 2000))
 
 
-def heaviest_bag_calories(elf_reader: Iterable[tuple[int]]) -> int:
-    return tuple(map(sum, elf_reader))[0]
+def heaviest_bag_calories(elf_reader: Iterator[tuple[int]]) -> int:
+    return max(map(sum, elf_reader))
 
 
 class HeaviestCaloriesContentTestCase(unittest.TestCase):
     def test_one_elf_should_have_heaviest_bag(self):
-        def mock_bag_generator():
+        def mock_bag_generator() -> Iterator[tuple[int]]:
             yield 1000, 2000
 
         calories = heaviest_bag_calories(mock_bag_generator())
         self.assertEqual(calories, 3000)
+
+    def test_get_the_heaviest_bag_of_many_elfs(self):
+        def mock_bag_generator() -> Iterator[tuple[int]]:
+            yield 1000, 2000
+            yield 2000, 2000
+
+        calories = heaviest_bag_calories(mock_bag_generator())
+        self.assertEqual(calories, 4000)
