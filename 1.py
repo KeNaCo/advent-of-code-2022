@@ -1,9 +1,9 @@
 import unittest
-from typing import Sequence, Iterator
+from typing import Iterator
 from unittest.mock import patch, mock_open
 
 
-def read_elf(list_of_calories: Sequence[str]) -> tuple[int]:
+def read_elf(list_of_calories: Iterator[str]) -> Iterator[tuple[int]]:
     elf_bag = []
     for item in list_of_calories:
         if item == '':  # end of elfs bag
@@ -69,7 +69,7 @@ class HeaviestCaloriesContentTestCase(unittest.TestCase):
 
 def read_list_of_calories_from_file(file_name: str) -> Iterator[str]:
     with open(file_name, "rt") as file:
-        return (line[:-1] for line in file)  # we strip the newline character
+        return (line[:-1] for line in file.readlines())  # we strip the newline character
 
 
 class ReadListOfCaloriesFromFileTestCase(unittest.TestCase):
@@ -84,3 +84,8 @@ class ReadListOfCaloriesFromFileTestCase(unittest.TestCase):
             list_of_calories = read_list_of_calories_from_file(file_name="1.in")
         m.assert_called_once_with("1.in", "rt")
         self.assertEqual(["1000", "2000", "", "1000", ""], list(list_of_calories))
+
+
+if __name__ == '__main__':
+    print(heaviest_bag_calories(read_elf(read_list_of_calories_from_file("1.in"))))
+
