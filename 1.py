@@ -86,6 +86,65 @@ class ReadListOfCaloriesFromFileTestCase(unittest.TestCase):
         self.assertEqual(["1000", "2000", "", "1000", ""], list(list_of_calories))
 
 
+def top_three_heaviest_calories(elf_reader: Iterator[tuple[int]]) -> int:
+    elf_bag = map(sum, elf_reader)
+    # prime the list with first 3 items, we need them sorted to simplify comparison logic
+    first, second, third = sorted((next(elf_bag), next(elf_bag), next(elf_bag)), reverse=True)
+    for bag in elf_bag:
+        if bag > first:
+            third = second
+            second = first
+            first = bag
+        elif bag > second:
+            third = second
+            second = bag
+        elif bag > third:
+            third = bag
+    return first + second + third
+
+
+class HeaviestTopTreeCaloriesContentTestCase(unittest.TestCase):
+    def test_we_have_only_thre_elfs_left(self):
+        def mock_bag_generator() -> Iterator[tuple[int]]:
+            yield 1000,
+            yield 2000,
+            yield 3000,
+
+        calories = top_three_heaviest_calories(mock_bag_generator())
+        self.assertEqual(6000, calories)
+
+    def test_new_heaviest_should_roll_whole_list(self):
+        def mock_bag_generator() -> Iterator[tuple[int]]:
+            yield 1000,
+            yield 2000,
+            yield 3000,  # 3 2 1
+            yield 2000, 2000  # 4 3 2
+
+        calories = top_three_heaviest_calories(mock_bag_generator())
+        self.assertEqual(9000, calories)
+
+    def test_the_second_heaviest_should_keep_first(self):
+        def mock_bag_generator() -> Iterator[tuple[int]]:
+            yield 1000,
+            yield 2000,
+            yield 5000,  # 5 2 1
+            yield 3000,  # 5 3 2
+
+        calories = top_three_heaviest_calories(mock_bag_generator())
+        self.assertEqual(10000, calories)
+
+    def test_the_third_heaviest_should_replace_only_the_last(self):
+        def mock_bag_generator() -> Iterator[tuple[int]]:
+            yield 3000,
+            yield 1000,
+            yield 5000,  # 5 3 1
+            yield 2000,  # 5 3 2
+
+        calories = top_three_heaviest_calories(mock_bag_generator())
+        self.assertEqual(10000, calories)
+
+
 if __name__ == '__main__':
-    print(heaviest_bag_calories(read_elf(read_list_of_calories_from_file("1.in"))))
+    print("Heaviest calories:", heaviest_bag_calories(read_elf(read_list_of_calories_from_file("1.in"))))
+    print("Sum of three heaviest calories:", top_three_heaviest_calories(read_elf(read_list_of_calories_from_file("1.in"))))
 
