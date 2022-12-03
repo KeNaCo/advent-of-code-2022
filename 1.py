@@ -1,5 +1,6 @@
 import unittest
 from typing import Sequence, Iterator
+from unittest.mock import patch, mock_open
 
 
 def read_elf(list_of_calories: Sequence[str]) -> tuple[int]:
@@ -64,3 +65,22 @@ class HeaviestCaloriesContentTestCase(unittest.TestCase):
 
         calories = heaviest_bag_calories(mock_bag_generator())
         self.assertEqual(calories, 4000)
+
+
+def read_list_of_calories_from_file(file_name: str) -> Iterator[str]:
+    with open(file_name, "rt") as file:
+        return (line[:-1] for line in file)  # we strip the newline character
+
+
+class ReadListOfCaloriesFromFileTestCase(unittest.TestCase):
+    def test_read_list_of_calories_from_empty_file(self):
+        with patch(f"{__name__}.open", mock_open(read_data="")) as m:
+            list_of_calories = read_list_of_calories_from_file(file_name="1.in")
+        m.assert_called_once_with("1.in", "rt")
+        self.assertEqual([], list(list_of_calories))
+
+    def test_read_list_of_calories_from_file(self):
+        with patch(f"{__name__}.open", mock_open(read_data="1000\n2000\n\n1000\n\n")) as m:
+            list_of_calories = read_list_of_calories_from_file(file_name="1.in")
+        m.assert_called_once_with("1.in", "rt")
+        self.assertEqual(["1000", "2000", "", "1000", ""], list(list_of_calories))
