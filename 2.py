@@ -26,10 +26,9 @@ class Game:
 
 
 class MatchResultTestCase(unittest.TestCase):
-    def test_rock_defeats_scissors(self):
-        match_result = Game.play_match(Choice.ROCK, Choice.SCISSORS)
-        self.assertEqual(MatchResult.WIN, match_result)
+    combinations = ((Choice.ROCK, Choice.SCISSORS), (Choice.SCISSORS, Choice.PAPER))
 
-    def test_scissors_defeats_paper(self):
-        match_result = Game.play_match(Choice.SCISSORS, Choice.PAPER)
-        self.assertEqual(MatchResult.WIN, match_result)
+    def test_wins(self):
+        for player1, player2 in self.combinations:
+            match_result = Game.play_match(player1, player2)
+            self.assertEqual(MatchResult.WIN, match_result)
