@@ -15,6 +15,13 @@ class MatchResult(IntEnum):
 
 
 class Game:
+    def __init__(self):
+        self._players = []
+
+    @property
+    def has_enough_players(self):
+        return len(self._players) == 2
+
     @staticmethod
     def play_match(player1: Choice, player2: Choice) -> MatchResult:
         """Returns match result from the perspective of player1"""
@@ -27,6 +34,10 @@ class Game:
             case _ if player1 == player2:
                 result = MatchResult.DRAW
         return result
+
+    def play(self):
+        if not self.has_enough_players:
+            raise RuntimeError("Not enough players to play the game! We need 2. Please add player to the game.")
 
 
 class MatchResultTestCase(unittest.TestCase):
@@ -50,3 +61,10 @@ class MatchResultTestCase(unittest.TestCase):
         for choice in (Choice.ROCK, Choice.PAPER, Choice.SCISSORS):
             match_result = Game.play_match(choice, choice)
             self.assertEqual(MatchResult.DRAW, match_result, f"{choice.name} vs {choice.name}")
+
+
+class GameResultTestCase(unittest.TestCase):
+    def test_play_game_without_players(self):
+        game = Game()
+        with self.assertRaises(RuntimeError):
+            game.play()
