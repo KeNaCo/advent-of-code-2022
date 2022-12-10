@@ -1,4 +1,5 @@
 import unittest
+from dataclasses import dataclass
 from enum import IntEnum
 
 
@@ -12,6 +13,20 @@ class MatchResult(IntEnum):
     LOSS = 0
     DRAW = 3
     WIN = 6
+
+    def opposite(self):
+        if self == MatchResult.LOSS:
+            return MatchResult.WIN
+        elif self == MatchResult.WIN:
+            return MatchResult.LOSS
+        else:
+            return MatchResult.DRAW
+
+
+@dataclass
+class Player:
+    moves: list[Choice]
+    results: list[MatchResult]
 
 
 class Game:
@@ -42,11 +57,21 @@ class Game:
         if not self.has_enough_players:
             raise RuntimeError("Not enough players to play the game! We need 2. Please add player to the game.")
 
-        return len(self._players[0])
+        player1 = self.get_player(1)
+        player2 = self.get_player(2)
+        for player1_choice, player2_choice in zip(player1.moves, player2.moves, strict=True):
+            result = self.play_match(player1_choice, player2_choice)
+            player1.results.append(result)
+            player2.results.append(result.opposite())
+
+        return len(self._players[0].results)
 
     def add_player(self, moves: list[Choice]) -> int:
-        self._players.append(moves)
+        self._players.append(Player(moves, []))
         return len(self._players)
+
+    def get_player(self, no: int) -> Player:
+        return self._players[no - 1]
 
 
 class MatchResultTestCase(unittest.TestCase):
@@ -94,3 +119,10 @@ class GameResultTestCase(unittest.TestCase):
 
         matches_played = game.play()
         self.assertEqual(0, matches_played)
+
+    def test_play_game_with_only_one_match(self):
+        game = Game()
+        game.add_player(moves=[Choice.ROCK])
+        game.add_player(moves=[Choice.SCISSORS])
+        matches_played = game.play()
+        self.assertEqual(1, matches_played)
