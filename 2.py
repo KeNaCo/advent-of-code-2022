@@ -35,9 +35,14 @@ class Game:
                 result = MatchResult.DRAW
         return result
 
-    def play(self):
+    def play(self) -> int:
+        """
+        :return: Number of matches played during one game.
+        """
         if not self.has_enough_players:
             raise RuntimeError("Not enough players to play the game! We need 2. Please add player to the game.")
+
+        return len(self._players[0])
 
     def add_player(self, moves: list[Choice]) -> int:
         self._players.append(moves)
@@ -79,3 +84,13 @@ class GameResultTestCase(unittest.TestCase):
         self.assertEqual(1, player_no)
         with self.assertRaises(RuntimeError):
             game.play()
+
+    def test_play_game_with_players_without_moves(self):
+        game = Game()
+        player1 = game.add_player(moves=[])
+        player2 = game.add_player(moves=[])
+        self.assertEqual(1, player1)
+        self.assertEqual(2, player2)
+
+        matches_played = game.play()
+        self.assertEqual(0, matches_played)
