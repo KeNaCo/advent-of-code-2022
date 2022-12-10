@@ -4,6 +4,7 @@ from enum import IntEnum
 
 class Choice(IntEnum):
     ROCK = 1
+    PAPER = 2
     SCISSORS = 3
 
 
@@ -19,7 +20,7 @@ class Game:
         """Returns match result from the perspective of player1"""
         result = None
         match player1, player2:
-            case Choice.ROCK, Choice.SCISSORS:
+            case (Choice.ROCK, Choice.SCISSORS) | (Choice.SCISSORS, Choice.PAPER):
                 result = MatchResult.WIN
         return result
 
@@ -27,4 +28,8 @@ class Game:
 class MatchResultTestCase(unittest.TestCase):
     def test_rock_defeats_scissors(self):
         match_result = Game.play_match(Choice.ROCK, Choice.SCISSORS)
+        self.assertEqual(MatchResult.WIN, match_result)
+
+    def test_scissors_defeats_paper(self):
+        match_result = Game.play_match(Choice.SCISSORS, Choice.PAPER)
         self.assertEqual(MatchResult.WIN, match_result)
