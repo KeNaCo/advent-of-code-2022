@@ -193,9 +193,8 @@ class StrategySetUpTheGame(unittest.TestCase):
         self.assertEqual((["A", "X"], ["B", "Y"]), result)
 
     def test_interpret_instructions_by_strategy1(self):
-        with patch(f"{__name__}.open", mock_open(read_data="A X\nB Y\n")) as m:
+        with patch.object(Strategy1, "_load_file", return_value=(["A", "X"], ["B", "Y"])):
             game = Strategy1.from_file(file_name="2.in")
-        m.assert_called_once_with("2.in", "rt")
         player1 = game.get_player(no=1)
         self.assertEqual([Choice.ROCK, Choice.PAPER], player1.moves)
         player2 = game.get_player(no=2)
