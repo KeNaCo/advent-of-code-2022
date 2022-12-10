@@ -1,6 +1,7 @@
 import unittest
 from dataclasses import dataclass
 from enum import IntEnum
+from typing import Iterator
 from unittest.mock import patch, mock_open
 
 
@@ -90,15 +91,18 @@ class Strategy1:
             case "C" | "Z":
                 return Choice.SCISSORS
 
+    @staticmethod
+    def _load_file(file_name: str):
+        with open(file_name, "rt") as file:
+            return (line.split(" ") for line in file.read().splitlines())
+
     @classmethod
     def from_file(cls, file_name):
         player1_moves = []
         player2_moves = []
-        with open(file_name, "rt") as file:
-            for line in file.read().splitlines():
-                player1, player2 = line.split(" ")
-                player1_moves.append(cls.map_file_choice(player1))
-                player2_moves.append(cls.map_file_choice(player2))
+        for player1, player2 in cls._load_file(file_name):
+            player1_moves.append(cls.map_file_choice(player1))
+            player2_moves.append(cls.map_file_choice(player2))
         game = Game()
         game.add_player(player1_moves)
         game.add_player(player2_moves)
@@ -178,6 +182,12 @@ class GameResultTestCase(unittest.TestCase):
 
 class StrategySetUpTheGame(unittest.TestCase):
     def test_loading_strategy_instructions_from_file(self):
+        with patch(f"{__name__}.open", mock_open(read_data="A X\nB Y\n")) as m:
+            result = tuple(Strategy1._load_file(file_name="2.in"))
+        m.assert_called_once_with("2.in", "rt")
+        self.assertEqual((["A", "X"], ["B", "Y"]), result)
+
+    def test_interpret_instructions_by_strategy1(self):
         with patch(f"{__name__}.open", mock_open(read_data="A X\nB Y\n")) as m:
             game = Strategy1.from_file(file_name="2.in")
         m.assert_called_once_with("2.in", "rt")
