@@ -126,3 +126,10 @@ class GameResultTestCase(unittest.TestCase):
         game.add_player(moves=[Choice.SCISSORS])
         matches_played = game.play()
         self.assertEqual(1, matches_played)
+
+    def test_play_game_with_only_many_matches(self):
+        game = Game()
+        game.add_player(moves=[Choice.ROCK, Choice.ROCK])
+        game.add_player(moves=[Choice.SCISSORS, Choice.ROCK])
+        matches_played = game.play()
+        self.assertEqual(2, matches_played)
