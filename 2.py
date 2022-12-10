@@ -39,6 +39,10 @@ class Game:
         if not self.has_enough_players:
             raise RuntimeError("Not enough players to play the game! We need 2. Please add player to the game.")
 
+    def add_player(self, moves: list[Choice]) -> int:
+        self._players.append(moves)
+        return len(self._players)
+
 
 class MatchResultTestCase(unittest.TestCase):
     combinations = (
@@ -66,5 +70,12 @@ class MatchResultTestCase(unittest.TestCase):
 class GameResultTestCase(unittest.TestCase):
     def test_play_game_without_players(self):
         game = Game()
+        with self.assertRaises(RuntimeError):
+            game.play()
+
+    def test_play_game_with_one_player(self):
+        game = Game()
+        player_no = game.add_player([])
+        self.assertEqual(1, player_no)
         with self.assertRaises(RuntimeError):
             game.play()
