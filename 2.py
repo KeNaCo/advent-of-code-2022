@@ -82,7 +82,7 @@ class Game:
 
 class Strategy1:
     @staticmethod
-    def map_file_choice(choice: str) -> Choice:
+    def _map_file_choice(choice: str) -> Choice:
         match choice:
             case "A" | "X":
                 return Choice.ROCK
@@ -101,8 +101,8 @@ class Strategy1:
         player1_moves = []
         player2_moves = []
         for player1, player2 in cls._load_file(file_name):
-            player1_moves.append(cls.map_file_choice(player1))
-            player2_moves.append(cls.map_file_choice(player2))
+            player1_moves.append(cls._map_file_choice(player1))
+            player2_moves.append(cls._map_file_choice(player2))
         game = Game()
         game.add_player(player1_moves)
         game.add_player(player2_moves)
