@@ -97,15 +97,20 @@ class Strategy1:
             return (line.split(" ") for line in file.read().splitlines())
 
     @classmethod
-    def from_file(cls, file_name):
+    def apply_strategy(cls, instructions, game: Game) -> Game:
         player1_moves = []
         player2_moves = []
-        for player1, player2 in cls._load_file(file_name):
-            player1_moves.append(cls._map_file_choice(player1))
-            player2_moves.append(cls._map_file_choice(player2))
-        game = Game()
+        for i1, i2 in instructions:
+            player1_moves.append(cls._map_file_choice(i1))
+            player2_moves.append(cls._map_file_choice(i2))
         game.add_player(player1_moves)
         game.add_player(player2_moves)
+        return game
+
+    @classmethod
+    def from_file(cls, file_name):
+        game = Game()
+        game = cls.apply_strategy(cls._load_file(file_name), game)
         return game
 
 
