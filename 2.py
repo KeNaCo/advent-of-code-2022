@@ -114,6 +114,34 @@ class Strategy1:
         return game
 
 
+class Strategy2(Strategy1):
+    @staticmethod
+    def _map_strategy(opponent_choice: Choice, expected_result: str) -> Choice:
+        result = None
+        match expected_result, opponent_choice:
+            case "Y", _:
+                result = opponent_choice
+            case ("X", Choice.ROCK) | ("Z", Choice.PAPER):
+                result = Choice.SCISSORS
+            case ("X", Choice.SCISSORS) | ("Z", Choice.ROCK):
+                result = Choice.PAPER
+            case ("X", Choice.PAPER) | ("Z", Choice.SCISSORS):
+                result = Choice.ROCK
+        return result
+
+    @classmethod
+    def apply_strategy(cls, instructions, game: Game) -> Game:
+        player1_moves = []
+        player2_moves = []
+        for i1, i2 in instructions:
+            player1_move = cls._map_file_choice(i1)
+            player1_moves.append(player1_move)
+            player2_moves.append(cls._map_strategy(player1_move, i2))
+        game.add_player(player1_moves)
+        game.add_player(player2_moves)
+        return game
+
+
 class MatchResultTestCase(unittest.TestCase):
     combinations = (
         (Choice.ROCK, Choice.SCISSORS),
@@ -200,8 +228,19 @@ class StrategySetUpTheGame(unittest.TestCase):
         player2 = game.get_player(no=2)
         self.assertEqual([Choice.ROCK, Choice.PAPER], player2.moves)
 
+    def test_interpret_instructions_by_strategy2(self):
+        with patch.object(Strategy2, "_load_file", return_value=(["A", "X"], ["B", "Y"], ["C", "Z"])):
+            game = Strategy2.from_file(file_name="2.in")
+        player1 = game.get_player(no=1)
+        self.assertEqual([Choice.ROCK, Choice.PAPER, Choice.SCISSORS], player1.moves)
+        player2 = game.get_player(no=2)
+        self.assertEqual([Choice.SCISSORS, Choice.PAPER, Choice.ROCK], player2.moves)
+
 
 if __name__ == "__main__":
     game = Strategy1.from_file(file_name="2.in")
     game.play()
     print("Player2 score based on 1st strategy: ", game.score_for(player_no=2))
+    game2 = Strategy2.from_file(file_name="2.in")
+    game2.play()
+    print("Player2 score based on 2st strategy: ", game2.score_for(player_no=2))
