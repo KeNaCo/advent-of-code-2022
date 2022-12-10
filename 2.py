@@ -183,3 +183,9 @@ class LoadGameFromFile(unittest.TestCase):
         self.assertEqual([Choice.ROCK, Choice.PAPER], player1.moves)
         player2 = game.get_player(no=2)
         self.assertEqual([Choice.ROCK, Choice.PAPER], player2.moves)
+
+
+if __name__ == "__main__":
+    game = Game.from_file(file_name="2.in")
+    game.play()
+    print(game.score_for(player_no=2))
