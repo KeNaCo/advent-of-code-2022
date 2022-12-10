@@ -78,6 +78,8 @@ class Game:
         player = self.get_player(player_no)
         return sum(player.moves) + sum(player.results)
 
+
+class Strategy1:
     @staticmethod
     def map_file_choice(choice: str) -> Choice:
         match choice:
@@ -174,10 +176,10 @@ class GameResultTestCase(unittest.TestCase):
         self.assertEqual(3, player2_score)
 
 
-class LoadGameFromFile(unittest.TestCase):
-    def test_loading_game_from_file(self):
+class StrategySetUpTheGame(unittest.TestCase):
+    def test_loading_strategy_instructions_from_file(self):
         with patch(f"{__name__}.open", mock_open(read_data="A X\nB Y\n")) as m:
-            game = Game.from_file(file_name="2.in")
+            game = Strategy1.from_file(file_name="2.in")
         m.assert_called_once_with("2.in", "rt")
         player1 = game.get_player(no=1)
         self.assertEqual([Choice.ROCK, Choice.PAPER], player1.moves)
@@ -186,6 +188,6 @@ class LoadGameFromFile(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    game = Game.from_file(file_name="2.in")
+    game = Strategy1.from_file(file_name="2.in")
     game.play()
-    print(game.score_for(player_no=2))
+    print("Player2 score based on 1st strategy: ", game.score_for(player_no=2))
