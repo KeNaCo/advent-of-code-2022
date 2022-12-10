@@ -22,6 +22,8 @@ class Game:
         match player1, player2:
             case (Choice.ROCK, Choice.SCISSORS) | (Choice.SCISSORS, Choice.PAPER) | (Choice.PAPER, Choice.ROCK):
                 result = MatchResult.WIN
+            case (Choice.SCISSORS, Choice.ROCK) | (Choice.PAPER, Choice.SCISSORS) | (Choice.ROCK, Choice.PAPER):
+                result = MatchResult.LOSS
         return result
 
 
@@ -36,3 +38,8 @@ class MatchResultTestCase(unittest.TestCase):
         for player1, player2 in self.combinations:
             match_result = Game.play_match(player1, player2)
             self.assertEqual(MatchResult.WIN, match_result, f"{player1.name} vs {player2.name}")
+
+    def test_losses(self):
+        for player2, player1 in self.combinations:
+            match_result = Game.play_match(player1, player2)
+            self.assertEqual(MatchResult.LOSS, match_result, f"{player1.name} vs {player2.name}")
