@@ -73,6 +73,10 @@ class Game:
     def get_player(self, no: int) -> Player:
         return self._players[no - 1]
 
+    def score_for(self, player_no: int) -> int:
+        player = self.get_player(player_no)
+        return sum(player.moves) + sum(player.results)
+
 
 class MatchResultTestCase(unittest.TestCase):
     combinations = (
@@ -133,3 +137,13 @@ class GameResultTestCase(unittest.TestCase):
         game.add_player(moves=[Choice.SCISSORS, Choice.ROCK])
         matches_played = game.play()
         self.assertEqual(2, matches_played)
+
+    def test_get_score_after_game(self):
+        game = Game()
+        game.add_player(moves=[Choice.ROCK])
+        game.add_player(moves=[Choice.SCISSORS])
+        game.play()
+        player1_score = game.score_for(player_no=1)
+        self.assertEqual(7, player1_score)
+        player2_score = game.score_for(player_no=2)
+        self.assertEqual(3, player2_score)
