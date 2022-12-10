@@ -1,6 +1,7 @@
 import unittest
 from dataclasses import dataclass
 from enum import IntEnum
+from unittest.mock import patch, mock_open
 
 
 class Choice(IntEnum):
@@ -77,6 +78,30 @@ class Game:
         player = self.get_player(player_no)
         return sum(player.moves) + sum(player.results)
 
+    @staticmethod
+    def map_file_choice(choice: str) -> Choice:
+        match choice:
+            case "A" | "X":
+                return Choice.ROCK
+            case "B" | "Y":
+                return Choice.PAPER
+            case "C" | "Z":
+                return Choice.SCISSORS
+
+    @classmethod
+    def from_file(cls, file_name):
+        player1_moves = []
+        player2_moves = []
+        with open(file_name, "rt") as file:
+            for line in file.read().splitlines():
+                player1, player2 = line.split(" ")
+                player1_moves.append(cls.map_file_choice(player1))
+                player2_moves.append(cls.map_file_choice(player2))
+        game = Game()
+        game.add_player(player1_moves)
+        game.add_player(player2_moves)
+        return game
+
 
 class MatchResultTestCase(unittest.TestCase):
     combinations = (
@@ -147,3 +172,14 @@ class GameResultTestCase(unittest.TestCase):
         self.assertEqual(7, player1_score)
         player2_score = game.score_for(player_no=2)
         self.assertEqual(3, player2_score)
+
+
+class LoadGameFromFile(unittest.TestCase):
+    def test_loading_game_from_file(self):
+        with patch(f"{__name__}.open", mock_open(read_data="A X\nB Y\n")) as m:
+            game = Game.from_file(file_name="2.in")
+        m.assert_called_once_with("2.in", "rt")
+        player1 = game.get_player(no=1)
+        self.assertEqual([Choice.ROCK, Choice.PAPER], player1.moves)
+        player2 = game.get_player(no=2)
+        self.assertEqual([Choice.ROCK, Choice.PAPER], player2.moves)
