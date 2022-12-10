@@ -20,15 +20,19 @@ class Game:
         """Returns match result from the perspective of player1"""
         result = None
         match player1, player2:
-            case (Choice.ROCK, Choice.SCISSORS) | (Choice.SCISSORS, Choice.PAPER):
+            case (Choice.ROCK, Choice.SCISSORS) | (Choice.SCISSORS, Choice.PAPER) | (Choice.PAPER, Choice.ROCK):
                 result = MatchResult.WIN
         return result
 
 
 class MatchResultTestCase(unittest.TestCase):
-    combinations = ((Choice.ROCK, Choice.SCISSORS), (Choice.SCISSORS, Choice.PAPER))
+    combinations = (
+        (Choice.ROCK, Choice.SCISSORS),
+        (Choice.SCISSORS, Choice.PAPER),
+        (Choice.PAPER, Choice.ROCK),
+    )
 
     def test_wins(self):
         for player1, player2 in self.combinations:
             match_result = Game.play_match(player1, player2)
-            self.assertEqual(MatchResult.WIN, match_result)
+            self.assertEqual(MatchResult.WIN, match_result, f"{player1.name} vs {player2.name}")
