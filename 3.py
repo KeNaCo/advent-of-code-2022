@@ -67,3 +67,9 @@ class LoadBagsFromFile(unittest.TestCase):
             result = load_bags_from_file(file_name="3.in")
         m.assert_called_once_with("3.in", "rt")
         self.assertEqual(["abcbef", "BaADEaFA", "ABCDEFG"], result)
+
+
+if __name__ == "__main__":
+    index = build_item_priority_index()
+    error_items_priorities_sum = sum(map(lambda i: index[i], scan_bags_for_errors(load_bags_from_file("3.in"))))
+    print("Sum of error items priorities is: ", error_items_priorities_sum)
