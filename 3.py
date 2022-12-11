@@ -1,7 +1,7 @@
 import unittest
 from itertools import chain
 from string import ascii_lowercase, ascii_uppercase
-from typing import Sequence
+from unittest.mock import patch, mock_open
 
 
 def find_compartment_overlap(bag: str) -> set[str]:
@@ -53,4 +53,17 @@ class TestScanBags(unittest.TestCase):
         self.assertEqual([], list(scan_bags_for_errors(bags=["abcdef"])))
 
     def test_multiple_bags(self):
-        self.assertListEqual(["b", "a", "A"], list(scan_bags_for_errors(bags=["abcbef", "BaADEaFA", "ABCDEFG"])))
+        self.assertCountEqual(["b", "a", "A"], list(scan_bags_for_errors(bags=["abcbef", "BaADEaFA", "ABCDEFG"])))
+
+
+def load_bags_from_file(file_name: str) -> list[str]:
+    with open(file_name, "rt") as file:
+        return file.read().splitlines()
+
+
+class LoadBagsFromFile(unittest.TestCase):
+    def test_load_bags_from_file(self):
+        with patch(f"{__name__}.open", mock_open(read_data="abcbef\nBaADEaFA\nABCDEFG")) as m:
+            result = load_bags_from_file(file_name="3.in")
+        m.assert_called_once_with("3.in", "rt")
+        self.assertEqual(["abcbef", "BaADEaFA", "ABCDEFG"], result)
