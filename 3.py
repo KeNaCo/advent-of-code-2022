@@ -81,9 +81,18 @@ class TestBadgeItemOverlap(unittest.TestCase):
         self.assertEqual({"r"}, result)
 
 
+def group_bags(bags):
+    group = []
+    for bag in bags:
+        group.append(bag)
+        if len(group) == 3:
+            yield group
+            group = []
+
+
 def scan_bags_for_badges(bags):
-    if len(bags) < 3:
-        return []
+    groups = (group for group in group_bags(bags))
+    return chain.from_iterable(filter(lambda overlaps: overlaps, map(lambda group: find_badge(*group), groups)))
 
 
 class TEstScanBagsForBadges(unittest.TestCase):
@@ -95,8 +104,33 @@ class TEstScanBagsForBadges(unittest.TestCase):
             [], list(scan_bags_for_badges(bags=["vJrwpWtwJgWrhcsFMMfFFhFp", "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL"]))
         )
 
+    def test_three_bags_with_overlap(self):
+        result = list(
+            scan_bags_for_badges(
+                bags=["vJrwpWtwJgWrhcsFMMfFFhFp", "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL", "PmmdzqPrVvPwwTWBwg"]
+            )
+        )
+        self.assertEqual(["r"], result)
+
+    def test_six_bags_with_overlap(self):
+        result = list(
+            scan_bags_for_badges(
+                bags=[
+                    "vJrwpWtwJgWrhcsFMMfFFhFp",
+                    "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+                    "PmmdzqPrVvPwwTWBwg",
+                    "vJrwpWtwJgWrhcsFMMfFFhFp",
+                    "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+                    "PmmdzqPrVvPwwTWBwg",
+                ]
+            )
+        )
+        self.assertEqual(["r", "r"], result)
+
 
 if __name__ == "__main__":
     index = build_item_priority_index()
     error_items_priorities_sum = sum(map(lambda i: index[i], scan_bags_for_errors(load_bags_from_file("3.in"))))
     print("Sum of error items priorities is: ", error_items_priorities_sum)
+    badge_items_prioriteis_sum = sum(map(lambda i: index[i], scan_bags_for_badges(load_bags_from_file("3.in"))))
+    print("Sum of badge items priorities in: ", badge_items_prioriteis_sum)
