@@ -69,6 +69,33 @@ class LoadBagsFromFile(unittest.TestCase):
         self.assertEqual(["abcbef", "BaADEaFA", "ABCDEFG"], result)
 
 
+def find_badge(bag1: str, bag2: str, bag3: str) -> set[str]:
+    return set(bag1) & set(bag2) & set(bag3)
+
+
+class TestBadgeItemOverlap(unittest.TestCase):
+    def test_find_overlap_of_three_bags(self):
+        result = find_badge(
+            bag1="vJrwpWtwJgWrhcsFMMfFFhFp", bag2="jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL", bag3="PmmdzqPrVvPwwTWBwg"
+        )
+        self.assertEqual({"r"}, result)
+
+
+def scan_bags_for_badges(bags):
+    if len(bags) < 3:
+        return []
+
+
+class TEstScanBagsForBadges(unittest.TestCase):
+    def test_no_bags(self):
+        self.assertEqual([], list(scan_bags_for_badges(bags=[])))
+
+    def test_two_bags_with_overlap(self):
+        self.assertEqual(
+            [], list(scan_bags_for_badges(bags=["vJrwpWtwJgWrhcsFMMfFFhFp", "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL"]))
+        )
+
+
 if __name__ == "__main__":
     index = build_item_priority_index()
     error_items_priorities_sum = sum(map(lambda i: index[i], scan_bags_for_errors(load_bags_from_file("3.in"))))
