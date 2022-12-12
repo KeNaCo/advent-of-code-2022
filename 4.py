@@ -123,3 +123,5 @@ class TestLoadingSectionRangesFromFile(unittest.TestCase):
 if __name__ == "__main__":
     containing_pairs = sum(map(lambda r: (r[0] in r[1]) or (r[1] in r[0]), load_section_ranges_from_file("4.in")))
     print("Sum of containing pairs: ", containing_pairs)
+    intersecting_pairs = sum(map(lambda r: r[0] & r[1], load_section_ranges_from_file("4.in")))
+    print("Sum of intersecting pairs: ", intersecting_pairs)
