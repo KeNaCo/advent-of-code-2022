@@ -12,6 +12,9 @@ class SectionRange:
         is_in = (item.start >= self.start) and (item.stop <= self.stop)
         return is_in
 
+    def __and__(self, other: "SectionRange") -> bool:
+        dont_intersect = (other.stop < self.start) or (self.stop < other.start)
+        return not dont_intersect
 
 
 class TestSectionInOperator(unittest.TestCase):
@@ -49,6 +52,49 @@ class TestSectionInOperator(unittest.TestCase):
         section1 = SectionRange(1, 2)
         section2 = SectionRange(1, 2)
         result = section1 in section2
+        self.assertTrue(result)
+
+
+class TestIntersectionOperator(unittest.TestCase):
+    def test_distinct_ranges_should_return_false(self):
+        section1 = SectionRange(1, 2)
+        section2 = SectionRange(3, 4)
+        result = section1 & section2
+        self.assertFalse(result)
+
+    def test_distinct_ranges_should_return_false2(self):
+        section1 = SectionRange(1, 2)
+        section2 = SectionRange(3, 4)
+        result = section2 & section1
+        self.assertFalse(result)
+
+    def test_intersecting_ranges_should_return_true(self):
+        section1 = SectionRange(1, 2)
+        section2 = SectionRange(2, 3)
+        result = section1 & section2
+        self.assertTrue(result)
+
+    def test_intersecting_ranges_should_return_true2(self):
+        section1 = SectionRange(1, 2)
+        section2 = SectionRange(2, 3)
+        result = section2 & section1
+        self.assertTrue(result)
+
+    def test_equal_ranges_should_return_true(self):
+        section1 = SectionRange(1, 2)
+        result = section1 & section1
+        self.assertTrue(result)
+
+    def test_subset_ranges_should_return_true(self):
+        section1 = SectionRange(1, 2)
+        section2 = SectionRange(1, 3)
+        result = section1 & section2
+        self.assertTrue(result)
+
+    def test_superset_ranges_should_return_true(self):
+        section1 = SectionRange(1, 2)
+        section2 = SectionRange(1, 3)
+        result = section2 & section1
         self.assertTrue(result)
 
 
