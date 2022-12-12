@@ -72,3 +72,8 @@ class TestLoadingSectionRangesFromFile(unittest.TestCase):
         m.assert_called_once_with("4.in", "rt")
         expected_result = [(SectionRange(2, 4), SectionRange(6, 8)), (SectionRange(2, 3), SectionRange(4, 5))]
         self.assertListEqual(expected_result, result)
+
+
+if __name__ == "__main__":
+    containing_pairs = sum(map(lambda r: (r[0] in r[1]) or (r[1] in r[0]), load_section_ranges_from_file("4.in")))
+    print("Sum of containing pairs: ", containing_pairs)
