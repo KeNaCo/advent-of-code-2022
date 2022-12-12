@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import unittest
+from unittest.mock import patch, mock_open
 
 
 @dataclass
@@ -48,3 +49,25 @@ class TestSectionUseCases(unittest.TestCase):
         section2 = SectionRange(1, 2)
         result = section1 in section2
         self.assertTrue(result)
+
+
+def load_section_ranges_from_file(file_name: str) -> list[tuple[SectionRange, SectionRange]]:
+    lines = None
+    with open(file_name, "rt") as file:
+        lines = file.read().splitlines()
+    ranges = []
+    for line in lines:  # "1-2,3-4"
+        r1, r2 = line.split(",")  # "1-2", "3-4"
+        r1_start, r1_stop = r1.split("-")  # "1", "2"
+        r2_start, r2_stop = r2.split("-")  # "3", "4"
+        ranges.append((SectionRange(int(r1_start), int(r1_stop)), SectionRange(int(r2_start), int(r2_stop))))
+    return ranges
+
+
+class TestLoadingSectionRangesFromFile(unittest.TestCase):
+    def test_load_a_range_pair(self):
+        with patch(f"{__name__}.open", mock_open(read_data="2-4,6-8\n2-3,4-5")) as m:
+            result = load_section_ranges_from_file(file_name="4.in")
+        m.assert_called_once_with("4.in", "rt")
+        expected_result = [(SectionRange(2, 4), SectionRange(6, 8)), (SectionRange(2, 3), SectionRange(4, 5))]
+        self.assertListEqual(expected_result, result)
