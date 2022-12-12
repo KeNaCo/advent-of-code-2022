@@ -13,7 +13,8 @@ class SectionRange:
         return is_in
 
 
-class TestSectionUseCases(unittest.TestCase):
+
+class TestSectionInOperator(unittest.TestCase):
     def test_distinct_ranges_should_return_false(self):
         section1 = SectionRange(1, 2)
         section2 = SectionRange(3, 4)
