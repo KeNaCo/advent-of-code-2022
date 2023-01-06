@@ -1,5 +1,6 @@
 import unittest
 from collections import deque
+from copy import deepcopy
 from dataclasses import dataclass
 from itertools import islice
 
@@ -87,6 +88,11 @@ class Crane:
     def __init__(self):
         self._area = None
 
+    def operate_over(self, area: StacksArea):
+        self._area = area
+        len(self._area)
+        return self
+
     def execute(self, commands: list):
         if self._area is None:
             raise OperationalError("No area to operate!")
@@ -98,3 +104,10 @@ class TestCrane(unittest.TestCase):
         crane = Crane()
         with self.assertRaises(OperationalError):
             crane.execute(commands=[])
+
+    def test_crane_with_empty_commands_should_do_nothing(self):
+        crane = Crane()
+        area = StacksArea((["X"], [], ["Y", "Z"]))
+        assert_area = deepcopy(area)
+        crane.operate_over(area).execute(commands=[])
+        self.assertEqual(assert_area, area)
