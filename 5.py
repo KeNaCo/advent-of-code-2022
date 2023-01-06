@@ -22,13 +22,14 @@ class StacksArea:
         stacks = []
         for line in input.splitlines():
             for i, crate in enumerate(cls._iter_stacks(line)):
-                if crate[1] == " ":  # no stack, but we know some may be here
-                    if len(stacks) <= i:  # we will initialise stack with a deque
-                        stacks.append(deque())
-                elif crate[0] == "[" and crate[2] == "]":
-                    if len(stacks) <= i:  # we will initialise stack with a deque
-                        stacks.append(deque())
-                    stacks[i].append(crate[1])
+                match tuple(crate):
+                    case " ", " ", " ":  # empty spot, but we expect stack here
+                        if len(stacks) <= i:  # we will initialise stack with a deque
+                            stacks.append(deque())
+                    case "[", crate_mark, "]":  # we have a crate
+                        if len(stacks) <= i:  # we will initialise stack with a deque
+                            stacks.append(deque())
+                        stacks[i].append(crate_mark)
         return cls(tuple(stacks))
 
     def __len__(self):
