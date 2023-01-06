@@ -11,8 +11,9 @@ class StacksArea:
     @staticmethod
     def _iter_stacks(iterable):
         it = iter(iterable)
-        while batch := list(islice(it, 3)):
-            yield batch
+        # we have 3 characters representing stack space plus 1 empty space between stacks
+        while batch := list(islice(it, 4)):
+            yield batch[:3]
 
     @classmethod
     def from_string(cls, input: str) -> "StacksArea":
@@ -61,3 +62,11 @@ class CreateStacksArea(unittest.TestCase):
         self.assertEqual(2, len(stacks_area[0]))
         self.assertEqual("S", stacks_area[0][0])
         self.assertEqual("T", stacks_area[0][1])
+
+    def test_two_stacks_with_one_crate_each(self):
+        stacks_area = StacksArea.from_string("[S] [T]\n 1   2 ")
+        self.assertEqual(2, len(stacks_area))
+        self.assertEqual(1, len(stacks_area[0]))
+        self.assertEqual(1, len(stacks_area[1]))
+        self.assertEqual("S", stacks_area[0][0])
+        self.assertEqual("T", stacks_area[1][0])
