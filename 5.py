@@ -40,7 +40,7 @@ class StacksArea:
         return self._stacks[index]
 
 
-class CreateStacksArea(unittest.TestCase):
+class TestCreateStacksArea(unittest.TestCase):
     def test_empty_input_should_return_empty_stacks_area(self):
         stacks_area = StacksArea.from_string("")
         self.assertEqual(0, len(stacks_area))
@@ -70,3 +70,12 @@ class CreateStacksArea(unittest.TestCase):
         self.assertEqual(1, len(stacks_area[1]))
         self.assertEqual("S", stacks_area[0][0])
         self.assertEqual("T", stacks_area[1][0])
+
+    def test_three_stacks_with_middle_one_empty(self):
+        stacks_area = StacksArea.from_string("[S]        \n[T]     [U]\n 1   2   3 ")
+        self.assertEqual(3, len(stacks_area))
+        self.assertEqual(2, len(stacks_area[0]))
+        self.assertEqual(0, len(stacks_area[1]))
+        self.assertEqual(1, len(stacks_area[2]))
+
+
