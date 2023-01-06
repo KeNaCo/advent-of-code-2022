@@ -25,13 +25,17 @@ class StacksArea:
                 if crate[1] == " ":  # no stack, but we know some may be here
                     if len(stacks) <= i:  # we will initialise stack with a deque
                         stacks.append(deque())
+                elif crate[0] == "[" and crate[2] == "]":
+                    if len(stacks) <= i:  # we will initialise stack with a deque
+                        stacks.append(deque())
+                    stacks[i].append(crate[1])
         return cls(tuple(stacks))
 
     def __len__(self):
         return len(self._stacks)
 
-    def __getitem__(self, item):
-        return self._stacks[item]
+    def __getitem__(self, index: int):
+        return self._stacks[index]
 
 
 class CreateStacksArea(unittest.TestCase):
@@ -43,3 +47,9 @@ class CreateStacksArea(unittest.TestCase):
         stacks_area = StacksArea.from_string("   \n 1 ")
         self.assertEqual(1, len(stacks_area))
         self.assertEqual(0, len(stacks_area[0]))
+
+    def test_one_stack_with_one_crate(self):
+        stacks_area = StacksArea.from_string("[S]\n 1 ")
+        self.assertEqual(1, len(stacks_area))
+        self.assertEqual(1, len(stacks_area[0]))
+        self.assertEqual("S", stacks_area[0][0])
