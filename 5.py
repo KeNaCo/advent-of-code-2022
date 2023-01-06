@@ -54,3 +54,10 @@ class CreateStacksArea(unittest.TestCase):
         self.assertEqual(1, len(stacks_area))
         self.assertEqual(1, len(stacks_area[0]))
         self.assertEqual("S", stacks_area[0][0])
+
+    def test_one_stack_with_two_crates(self):
+        stacks_area = StacksArea.from_string("[S]\n[T]\n 1 ")
+        self.assertEqual(1, len(stacks_area))
+        self.assertEqual(2, len(stacks_area[0]))
+        self.assertEqual("S", stacks_area[0][0])
+        self.assertEqual("T", stacks_area[0][1])
