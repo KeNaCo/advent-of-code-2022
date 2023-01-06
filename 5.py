@@ -79,3 +79,22 @@ class TestCreateStacksArea(unittest.TestCase):
         self.assertEqual(1, len(stacks_area[2]))
 
 
+class OperationalError(Exception):
+    pass
+
+
+class Crane:
+    def __init__(self):
+        self._area = None
+
+    def execute(self, commands: list):
+        if self._area is None:
+            raise OperationalError("No area to operate!")
+        return self
+
+
+class TestCrane(unittest.TestCase):
+    def test_crane_cannot_operate_without_area(self):
+        crane = Crane()
+        with self.assertRaises(OperationalError):
+            crane.execute(commands=[])
